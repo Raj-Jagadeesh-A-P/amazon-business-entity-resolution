@@ -1,0 +1,47 @@
+# --- generated submission artefacts -----------------------------------------
+# Regenerate with `python -m src.pipeline --stage all`. The candidate set is
+# large, so keep it out of git. Both files still belong in the submission zip --
+# ignored here, not omitted there.
+output/*.tsv
+!output/.gitkeep
+
+# --- challenge-provided material (not ours to version) ---------------------
+# dataset/ and these docs ship with the challenge's student_resource package
+# and are re-obtained from there. dataset/ in particular is far too large to
+# track. Note that ignoring Documentation_template.md does not exempt the
+# *filled* copy from the submission zip -- it is still required there.
+dataset/
+Documentation_template.md
+README_dataset.md
+
+# --- cached pipeline artefacts ----------------------------------------------
+# Intermediate normalised records, trained models, feature caches. Reproducible
+# from the dataset, so never worth committing.
+artifacts/
+*.pkl
+*.joblib
+*.parquet
+
+# --- python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# --- virtual environments ----------------------------------------------------
+.venv/
+venv/
+env/
+
+# --- notebooks ---------------------------------------------------------------
+.ipynb_checkpoints/
+
+# --- os / editor noise -------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

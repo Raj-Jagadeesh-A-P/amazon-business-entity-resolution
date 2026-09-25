@@ -1,0 +1,41 @@
+# Pinned dependencies for the business entity resolution pipeline.
+#
+# Install with:
+#     pip install -r requirements.txt
+#
+# NOTE: these pins are a starting point, not a tested lockfile. Verify the set
+# resolves for your interpreter before relying on it:
+#     pip install --dry-run -r requirements.txt
+# Re-pin from the versions that actually install, then commit the result.
+
+# --- core data handling -----------------------------------------------------
+numpy==2.1.3
+pandas==2.2.3
+
+# --- similarity / string metrics -------------------------------------------
+# rapidfuzz provides C-accelerated Levenshtein, Jaro-Winkler and token-set
+# ratios. Edit distance dominates feature cost once candidate volume grows, so
+# the pure-Python alternatives (difflib) are not fast enough. jellyfish is kept
+# for phonetic encodings (metaphone/soundex), which rapidfuzz does not cover.
+rapidfuzz==3.10.1
+jellyfish==1.1.0
+
+# --- unicode handling -------------------------------------------------------
+# Needed to transliterate Devanagari (and other non-Latin) names and addresses so
+# string similarity works across scripts. Pure Python, no external data.
+Unidecode==1.3.8
+
+# --- modelling --------------------------------------------------------------
+# Gradient-boosted trees over the handcrafted features. Trains fast and gives
+# the calibrated per-candidate probability that threshold tuning needs. LightGBM
+# is listed first; xgboost is a drop-in alternative -- keep exactly one of the
+# two installed and align model.py with the choice.
+lightgbm==4.5.0
+# xgboost==2.1.3
+
+# --- evaluation / diagnostics ----------------------------------------------
+# Macro F_0.5, threshold sweeps and the error-analysis tables are implemented
+# directly against the leaderboard formula; scikit-learn is used for the
+# train/validation split, calibration and PR-curve diagnostics.
+scikit-learn==1.5.2
+scipy==1.14.1
