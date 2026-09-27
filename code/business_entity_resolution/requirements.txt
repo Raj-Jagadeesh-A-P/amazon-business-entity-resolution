@@ -1,41 +1,47 @@
-# Pinned dependencies for the business entity resolution pipeline.
+# Dependencies for the business entity resolution pipeline.
 #
-# Install with:
 #     pip install -r requirements.txt
 #
-# NOTE: these pins are a starting point, not a tested lockfile. Verify the set
-# resolves for your interpreter before relying on it:
-#     pip install --dry-run -r requirements.txt
-# Re-pin from the versions that actually install, then commit the result.
+# These versions are the ones the pipeline was developed and tested against, and
+# are the versions resolved in the working environment. They are *not* a lockfile
+# for a different platform: pip may need to build wheels for your interpreter, and
+# the floor matters more than the exact patch level (see the notes per package).
+# Re-pin from what actually installs before relying on this elsewhere.
 
 # --- core data handling -----------------------------------------------------
-numpy==2.1.3
-pandas==2.2.3
+# NumPy 2 is required, not merely allowed: the caches store fixed-width byte
+# arrays and the pipeline relies on BytesDType plus np.lib.format.open_memmap.
+numpy==2.5.0
+pandas==3.0.5
+
+# --- on-disk columnar cache -------------------------------------------------
+# The normalised records are cached as Parquet rather than pickled .npy so that
+# a half-written cache is a visible, recoverable artefact instead of a corrupt
+# file that unpickles into garbage. pyarrow is the engine for both writing and
+# the row-count/footer checks that validate a cache.
+pyarrow==25.0.1
 
 # --- similarity / string metrics -------------------------------------------
-# rapidfuzz provides C-accelerated Levenshtein, Jaro-Winkler and token-set
-# ratios. Edit distance dominates feature cost once candidate volume grows, so
-# the pure-Python alternatives (difflib) are not fast enough. jellyfish is kept
-# for phonetic encodings (metaphone/soundex), which rapidfuzz does not cover.
-rapidfuzz==3.10.1
-jellyfish==1.1.0
+# rapidfuzz provides C-accelerated Levenshtein, Jaro-Winkler and token-set ratios.
+# Edit distance dominates feature cost once candidate volume grows, so the
+# pure-Python alternatives (difflib) are not fast enough.
+# Note: JaroWinkler moved to rapidfuzz.distance in 3.x; importing it from
+# rapidfuzz.fuzz raises ImportError on this version.
+rapidfuzz==3.14.6
+# jellyfish covers the phonetic encodings (metaphone/soundex) that rapidfuzz does
+# not, used by the name_phonetic similarity feature. The corresponding *blocking*
+# strategy was measured to contribute nothing and is disabled, but the feature
+# itself is still computed.
+jellyfish==1.2.1
 
 # --- unicode handling -------------------------------------------------------
-# Needed to transliterate Devanagari (and other non-Latin) names and addresses so
-# string similarity works across scripts. Pure Python, no external data.
-Unidecode==1.3.8
+# Transliterates Devanagari (and other non-Latin) names and addresses so string
+# similarity works across scripts. Pure Python, no external data.
+Unidecode==1.4.0
 
 # --- modelling --------------------------------------------------------------
-# Gradient-boosted trees over the handcrafted features. Trains fast and gives
-# the calibrated per-candidate probability that threshold tuning needs. LightGBM
-# is listed first; xgboost is a drop-in alternative -- keep exactly one of the
-# two installed and align model.py with the choice.
-lightgbm==4.5.0
-# xgboost==2.1.3
-
-# --- evaluation / diagnostics ----------------------------------------------
-# Macro F_0.5, threshold sweeps and the error-analysis tables are implemented
-# directly against the leaderboard formula; scikit-learn is used for the
-# train/validation split, calibration and PR-curve diagnostics.
-scikit-learn==1.5.2
-scipy==1.14.1
+# Gradient-boosted trees over the handcrafted features. Trains in seconds on a
+# pair sample and yields the calibrated per-candidate probability that threshold
+# tuning needs. Exactly one of lightgbm / xgboost should be installed; model.py
+# imports lightgbm.
+lightgbm==4.7.0

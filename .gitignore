@@ -1,7 +1,8 @@
 # --- generated submission artefacts -----------------------------------------
-# Regenerate with `python -m src.pipeline --stage all`. The candidate set is
-# large, so keep it out of git. Both files still belong in the submission zip --
-# ignored here, not omitted there.
+# Regenerate with the stage sequence documented in
+# code/business_entity_resolution/README.md (index -> candidates -> features ->
+# train -> predict). The candidate set is large, so keep it out of git. Both files
+# still belong in the submission zip -- ignored here, not omitted there.
 output/*.tsv
 !output/.gitkeep
 
